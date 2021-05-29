@@ -1,29 +1,35 @@
 import pygame, sys
+class Game(object):
+    def __init__(self):
+        # Config
+        self.tps_max = 100.0
 
-pygame.init()
-screen = pygame.display.set_mode((1200, 700))
-box = pygame.Rect(10,10,50,50)
-x=10
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            sys.exit()
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-            sys.exit()
+        #Initialization
+        pygame.init()
+        self.screen = pygame.display.set_mode((1200, 700))
+        self.tps_clock = pygame.time.Clock()
+        self.tps_delta = 0.0
+        while True:
+            #Events
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    sys.exit()
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                    sys.exit()
 
-    if pygame.key.get_pressed()[pygame.K_d]:
-        box.x +=1
-    if pygame.key.get_pressed()[pygame.K_a]:
-        box.x -=1
-    if pygame.key.get_pressed()[pygame.K_w]:
-        box.y -=1
-    if pygame.key.get_pressed()[pygame.K_s]:
-        box.y +=1
+            # Ticking
+            self.tps_delta += self.tps_clock.tick() / 1000.0
+            while self.tps_delta > 1 / self.tps_max:
+                self.tick()
+                self.tps_delta -= 1 / self.tps_max
 
-
-
-
-    #Drawing
-    screen.fill((0,0,0))
-    pygame.draw.rect(screen, (0,150, 255), box)
-    pygame.display.flip()
+            #Rendering
+            self.screen.fill((0,0,0))
+            self.draw()
+            pygame.display.flip()
+    def tick(self):
+        keys = pygame.key.get_pressed()
+    def draw(self):
+        pygame.draw.rect(self.screen, (0, 150, 255), pygame.Rect(20,20,100,100))
+if __name__ == "__main__":
+    Game()
