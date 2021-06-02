@@ -157,27 +157,31 @@ def Game():
 
         def update(self):
             """In this methods if is called
-            numbers of scores are updated minus one."""
+            numbers of scores are updated minus one.
+            It adds scores to list of scores shown
+            in statistics."""
             self.score -= 1
             self.text = "Zdrowie: %4d" % self.score
             self.image = self.font.render(self.text,True,(0,0,0))
             self.rect = self.image.get_rect(x =770, y = 0)
             if self.score == 0:
                 list_of_score.append(Score)
-
+    """Initialization of pygame"""
     pygame.init()
 
+    """Making the screen"""
     screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
     pygame.display.set_caption("Scooby, how much can you eat?")
 
-
+    """Setting background image"""
     background_image = loadImage("white.jpg")
     screen.blit(background_image,(0,0))
 
-
+    """Setting game sounds"""
     Scooby_good_food_sound = loadSound("good_sound.mp3")
     Scooby_bad_food_sound = loadSound("bad_sound.mp3")
 
+    """Creating  and adding and drawing Sprites of scooby, good food and bad food"""
     scoobySPRITE = pygame.sprite.RenderClear()
     Scooby = scooby()
     scoobySPRITE.add(Scooby)
@@ -187,6 +191,8 @@ def Game():
 
     bad_foodSprites = pygame.sprite.RenderClear()
 
+    """Creating adding and drawing Sprites of scoreboard
+    and health points."""
     scoreboardSprite = pygame.sprite.RenderClear()
     scoreboardSprite.add(ScoreBoard())
     scoreboardSprite.draw(screen)
@@ -197,12 +203,18 @@ def Game():
     HealthPointsSprite.draw(screen)
     pygame.display.flip()
 
+    """Creating clock to use it in loop 
+    and initializing variables used in loop"""
     clock = pygame.time.Clock()
     add_good_food = 0
     add_bad_food = 0
-
     Health = 10
+
+    """Main loop where the programme works."""
     while running[-1]:
+        """Defining events and keyboards keys and 
+        their application in game. Setting constant
+        number of frames per second."""
         clock.tick(60)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -219,6 +231,8 @@ def Game():
                     Scooby.x_velocity = 0
                 elif event.key == K_RIGHT:
                     Scooby.x_velocity = 0
+        """Adding objects on screen and optimizing them
+        to suitable number of ticks. """
         add_good_food += 3
         if add_good_food >= 175:
             good_foodSprites.add(good_food())
@@ -228,8 +242,11 @@ def Game():
         if add_bad_food >= 150:
             bad_foodSprites.add(bad_food())
             add_bad_food = 0
-
+        """This part of programme works if objects collide with themselves."""
         for hit in pygame.sprite.groupcollide(good_foodSprites,scoobySPRITE,True,False):
+            """If good food and scooby collide Score is added plus one,
+            sounds for good food plays and Scoreboard is updating clearing 
+            and drawing on the screen. Good food disappears. Scooby remains."""
             Score +=1
             Scooby_good_food_sound.play()
             scoreboardSprite.update()
@@ -238,6 +255,10 @@ def Game():
             pygame.display.flip()
 
         for hit in pygame.sprite.groupcollide(bad_foodSprites, scoobySPRITE, True, False):
+            """If badfood and scooby collide Health is added minus one,
+            sounds for bad food plays and HealthPoints is updating clearing 
+            and drawing on the screen. Bad food disappears. Scooby remains.
+            If Health is equal to zero, programme stops working on."""
             Health -=1
             Scooby_bad_food_sound.play()
             HealthPointsSprite.update()
@@ -246,27 +267,32 @@ def Game():
             pygame.display.flip()
             if Health == 0:
                 running.append(False)
+        """This part of programme keeps both counters."""
         for hit in pygame.sprite.groupcollide(scoreboardSprite, scoobySPRITE, False, False):
             pass
         for hit in pygame.sprite.groupcollide(HealthPointsSprite, scoobySPRITE, False, False):
             pass
 
-
+        """Sprites are being updated."""
         scoobySPRITE.update()
         good_foodSprites.update()
         bad_foodSprites.update()
-
+        """Sprites are being cleared."""
         scoobySPRITE.clear(screen, background_image)
         good_foodSprites.clear(screen, background_image)
         bad_foodSprites.clear(screen, background_image)
-
+        """Sprites are being drawn on the screen."""
         scoobySPRITE.draw(screen)
         good_foodSprites.draw(screen)
         bad_foodSprites.draw(screen)
 
         pygame.display.flip()
+    """Quiting programme"""
     pygame.quit()
 def statistics():
+    """Function, when is called it creates another
+    GUI window with statistics from the game, which
+    contains number of tries and number of score."""
     top = Toplevel()
     top.title('Statystyki')
     top.geometry('400x500+550+200')
@@ -281,6 +307,9 @@ def statistics():
         points_Label.pack()
         points_Label.place(y =75 + 25*i,x=200, height=25, width=200)
 def author():
+    """Function, when is called it creates another
+    GUI window with information about the author
+    and short rules of the game."""
     top = Toplevel()
     top.title('O Autorze')
     top.geometry('400x500+550+200')
@@ -296,10 +325,15 @@ def author():
 def quit():
     """This function, when is called, closes programme"""
     root.destroy()
+
+"""Here is main part of GUI part of programme, it 
+consists of title, label and the size of window."""
 root = Tk()
 my_title = 'Gra'
 root.title(my_title)
 root.geometry('400x500+550+200')
+
+"""In this part two fonts for the text are defined"""
 smallFont = Font(
     family = "Helvetica",
     size = 15,
@@ -314,12 +348,17 @@ bigFont = Font(
     slant = "roman",
     underline =0,
     overstrike = 0)
+
+"""Here is list of scores achieved in the game
+and 4 buttons, every with suitable functions,
+defined above."""
 list_of_score = []
 PlayButton = Button(root, text='Graj',font = bigFont, command=Game)
 StatisticsButton = Button(root, text='Statystyki',font = bigFont, command=statistics)
 AuthorButton = Button(root, text='O autorze',font = bigFont, command=author)
 ExitButton = Button(root, text='Wyjdź',font = bigFont, command=quit)
 
+"""Button are packed and placed on the screen."""
 PlayButton.pack()
 StatisticsButton.pack()
 AuthorButton.pack()
@@ -329,4 +368,5 @@ PlayButton.place(height=125, width=400)
 StatisticsButton.place(y = 125, height=125, width=400)
 AuthorButton.place(y = 250, height=125, width=400)
 ExitButton.place(y = 375,height=125, width=400)
+"""Programme starts working."""
 root.mainloop()
